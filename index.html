@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecowaste Calc</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Splash Screen -->
+    <section id="splash" class="screen splash-screen">
+      <div class="splash-art">
+        <div class="recycle">♻</div>
+        <h1>Ecowaste Calc</h1>
+        <p>Hitung Timbulan dan Volume Sampah<br>untuk Lingkungan yang Lebih Baik</p>
+        <button class="primary-btn" onclick="showPage('home')">Mulai</button>
+      </div>
+    </section>
+
+    <!-- Main App -->
+    <section id="home" class="screen hidden">
+      <header class="topbar">
+        <div class="brand"><span class="leaf">♧</span> Ecowaste Calc</div>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      </header>
+
+      <main class="content">
+        <div class="greeting">
+          <div class="leaf-icon">🌿</div>
+          <div><b>Halo, Pengguna</b><small>Kelola sampah, jaga lingkungan!</small></div>
+        </div>
+
+        <button class="feature-card green" onclick="showPage('timbulan')">
+          <span class="feature-icon">▦</span>
+          <span><b>Hitung Timbulan Sampah</b><small>Menghitung jumlah sampah berdasarkan jumlah penduduk atau sumber sampah.</small></span>
+        </button>
+
+        <button class="feature-card blue" onclick="showPage('volume')">
+          <span class="feature-icon">◇</span>
+          <span><b>Hitung Volume Sampah</b><small>Memperkirakan volume sampah berdasarkan berat dan densitas.</small></span>
+        </button>
+
+        <div class="two-cards">
+          <button class="mini-card purple" onclick="showPage('prediksi')">
+            <span>📈</span><b>Prediksi (Regresi & Interpolasi)</b><small>Perkiraan timbulan sampah berdasarkan data historis.</small>
+          </button>
+          <button class="mini-card yellow" onclick="showPage('riwayat')">
+            <span>📄</span><b>Riwayat & Laporan</b><small>Lihat hasil perhitungan sebelumnya.</small>
+          </button>
+        </div>
+      </main>
+      <nav class="bottom-nav">
+        <button class="active" onclick="showPage('home')">⌂<small>Beranda</small></button>
+        <button onclick="showPage('riwayat')">▣<small>Riwayat</small></button>
+        <button onclick="showPage('profil')">♙<small>Profil</small></button>
+      </nav>
+    </section>
+
+    <!-- Timbulan -->
+    <section id="timbulan" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('home')">←</button><b>Hitung Timbulan Sampah</b></header>
+      <main class="content">
+        <div class="panel">
+          <h3>Masukkan Data</h3>
+          <label>Jumlah Penduduk / Sumber Sampah</label>
+          <div class="input-unit"><input id="population" type="number" value="150" min="1"><span>orang</span></div>
+
+          <label>Berat Sampah Total</label>
+          <div class="input-unit"><input id="totalWeight" type="number" value="75" min="0"><span>kg</span></div>
+
+          <label>Lama Pengukuran</label>
+          <div class="input-unit"><input id="days" type="number" value="3" min="1"><span>hari</span></div>
+
+          <button class="primary-btn full" onclick="calculateTimbulan()">Hitung</button>
+        </div>
+
+        <div class="info-box">
+          <b>ⓘ &nbsp; Rumus</b>
+          <p>Timbulan per kapita =<br>
+          Berat sampah total ÷ jumlah penduduk</p>
+          <small>Untuk hasil harian, total sampah per hari = berat sampah total ÷ lama pengukuran.</small>
+        </div>
+      </main>
+    </section>
+
+    <!-- Hasil Timbulan -->
+    <section id="timbulanResult" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('timbulan')">←</button><b>Hasil Perhitungan</b></header>
+      <main class="content">
+        <div class="result-main">
+          <span>🌿 &nbsp; Timbulan Sampah</span>
+          <strong id="perCapitaResult">0,50 kg/orang/hari</strong>
+          <small>(Timbulan per kapita)</small>
+        </div>
+        <div class="result-card"><span>🗑️</span><div><b>Timbulan Total per Hari</b><strong id="dailyResult">25,00 kg/hari</strong></div></div>
+        <div class="result-card"><span>◈</span><div><b>Volume Sampah (perkiraan)</b><strong id="dailyVolumeResult">0,20 m³/hari</strong><small id="literResult">(200 liter/hari)</small></div></div>
+        <button class="primary-btn full" onclick="saveTimbulan()">Simpan Hasil</button>
+        <div class="info-box"><b>ⓘ &nbsp; Keterangan</b><p>Perhitungan volume menggunakan densitas sampah 125 kg/m³. Nilai densitas dapat disesuaikan dengan kondisi sampah di lapangan.</p></div>
+      </main>
+    </section>
+
+    <!-- Volume -->
+    <section id="volume" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('home')">←</button><b>Hitung Volume Sampah</b></header>
+      <main class="content">
+        <div class="panel">
+          <h3>Masukkan Data</h3>
+          <label>Berat Sampah</label>
+          <div class="input-unit"><input id="volumeWeight" type="number" value="50" min="0"><span>kg</span></div>
+          <label>Densitas Sampah</label>
+          <div class="input-unit"><input id="density" type="number" value="125" min="0.01"><span>kg/m³</span></div>
+          <button class="primary-btn full" onclick="calculateVolume()">Hitung</button>
+        </div>
+        <div class="info-box"><b>ⓘ &nbsp; Rumus</b><p>Volume = Berat Sampah / Densitas</p><small>Contoh: 50 kg / 125 kg/m³ = 0,4 m³ (400 liter)</small></div>
+      </main>
+    </section>
+
+    <!-- Volume Result -->
+    <section id="volumeResult" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('volume')">←</button><b>Hasil Perhitungan</b></header>
+      <main class="content">
+        <div class="result-main"><span>◈ &nbsp; Volume Sampah</span><strong id="volumeResultValue">0,40 m³</strong><small id="volumeLiter">(400 liter)</small></div>
+        <div class="panel">
+          <h3>Informasi Tambahan</h3>
+          <div class="data-row"><span>Berat Sampah</span><b id="weightInfo">50 kg</b></div>
+          <div class="data-row"><span>Densitas Sampah</span><b id="densityInfo">125 kg/m³</b></div>
+          <div class="data-row"><span>Kapasitas Tempat Sampah<br><small>(aproksimasi)</small></span><b id="capacityInfo">1 kontainer 500 L<br>(0,5 m³)</b></div>
+        </div>
+        <button class="primary-btn full" onclick="saveVolume()">Simpan Hasil</button>
+      </main>
+    </section>
+
+    <!-- Prediction -->
+    <section id="prediksi" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('home')">←</button><b>Prediksi Timbulan Sampah</b></header>
+      <main class="content">
+        <div class="tabs"><button class="tab active" onclick="selectPrediction('regresi')">Regresi</button><button class="tab" onclick="selectPrediction('interpolasi')">Interpolasi</button></div>
+        <div id="regresiBox">
+          <div class="panel">
+            <h3>Data Historis</h3>
+            <table id="historyTable">
+              <thead><tr><th>Jumlah Penduduk (orang)</th><th>Timbulan Sampah (kg/hari)</th></tr></thead>
+              <tbody>
+                <tr><td>100</td><td>50</td></tr>
+                <tr><td>200</td><td>100</td></tr>
+                <tr><td>300</td><td>140</td></tr>
+                <tr><td>400</td><td>200</td></tr>
+              </tbody>
+            </table>
+            <div class="add-data">
+              <input id="newX" type="number" placeholder="Penduduk">
+              <input id="newY" type="number" placeholder="kg/hari">
+              <button onclick="addHistoricalData()">+</button>
+            </div>
+            <button class="primary-btn full" onclick="runRegression()">Buat Model Regresi</button>
+          </div>
+          <div class="formula-box">
+            <b>Persamaan Regresi Linear</b>
+            <strong id="regressionEquation">y = 3 + 0,49x</strong>
+            <p>y = timbulan sampah (kg/hari)<br>x = jumlah penduduk (orang)</p>
+            <div class="predict-row"><input id="predictX" type="number" value="250"><button onclick="predictRegression()">Prediksi</button></div>
+            <b id="predictionOutput"></b>
+          </div>
+        </div>
+
+        <div id="interpolasiBox" class="hidden">
+          <div class="panel">
+            <h3>Interpolasi Linear</h3>
+            <p>Masukkan dua titik data yang mengapit nilai yang ingin diprediksi.</p>
+            <div class="grid2">
+              <input id="x1" type="number" value="200" placeholder="X1">
+              <input id="y1" type="number" value="100" placeholder="Y1">
+              <input id="x2" type="number" value="300" placeholder="X2">
+              <input id="y2" type="number" value="140" placeholder="Y2">
+            </div>
+            <input id="interpX" type="number" value="250" placeholder="X yang dicari">
+            <button class="primary-btn full" onclick="interpolate()">Hitung Interpolasi</button>
+            <div class="formula-box"><b>Hasil:</b><strong id="interpResult">—</strong></div>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <!-- History -->
+    <section id="riwayat" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('home')">←</button><b>Riwayat Perhitungan</b></header>
+      <main class="content">
+        <div id="historyList"></div>
+        <button class="outline-btn full" onclick="exportReport()">⇩ &nbsp; Ekspor Laporan (PDF)</button>
+      </main>
+    </section>
+
+    <!-- Profile -->
+    <section id="profil" class="screen hidden">
+      <header class="topbar"><button class="back" onclick="showPage('home')">←</button><b>Profil</b></header>
+      <main class="content">
+        <div class="profile"><div class="avatar">🌿</div><h2>Pengguna Ecowaste Calc</h2><p>Aplikasi sederhana untuk menghitung timbulan, volume, dan prediksi sampah.</p></div>
+      </main>
+    </section>
+
+    <div id="toast"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
